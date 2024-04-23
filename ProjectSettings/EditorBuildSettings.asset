@@ -4,7 +4,11 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Scenes/HackDay1.unity
+    guid: 2be0f7d0582e14c0381264687759be95
   m_configObjects:
     Unity.XR.Oculus.Settings: {fileID: 11400000, guid: de9f12ad0f7e24a21afc17c1fc2c96a5, type: 2}
     com.unity.xr.management.loader_settings: {fileID: 11400000, guid: f1d3c56115e6a45c3921de22a9d3ceaa, type: 2}
+    com.unity.xr.openxr.settings4: {fileID: 11400000, guid: 8150dd3bc994641d083d9b1d04a8f75a, type: 2}
