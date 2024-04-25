@@ -1485,6 +1485,10 @@ PrefabInstance:
       propertyPath: m_Avatar
       value: 
       objectReference: {fileID: 9000000, guid: a9bcfc3da5a1a0d4f93ba0db7ab4484f, type: 3}
+    - target: {fileID: 996504430581290861, guid: bd8120e4a733d1b4ab18fbeb92853d5a, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2759262911002873242, guid: bd8120e4a733d1b4ab18fbeb92853d5a, type: 3}
       propertyPath: m_LocalPosition.x
       value: 39.9

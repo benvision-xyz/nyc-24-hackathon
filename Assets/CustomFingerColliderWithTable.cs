@@ -81,6 +81,11 @@ public class CustomFingerColliderWithTable : MonoBehaviour
                 leftHandSkeleton = skeleton;
 
             }
+            //  else if (skeleton.GetSkeletonType() == OVRSkeleton.SkeletonType.FullBody)
+            // {
+            //     bodySkeleton = skeleton;
+
+            // }
 
             // else if (skeleton.GetSkeletonType() == OVRSkeleton.SkeletonType.Body)
             // {
@@ -143,6 +148,22 @@ public class CustomFingerColliderWithTable : MonoBehaviour
 
         }
 
+        foreach (var bone in bodySkeleton.Bones)
+        {
+            if (bone.Id == OVRSkeleton.BoneId.FullBody_LeftShoulder)
+            {
+                leftShoulderBone = bone;
+                //break;
+            }
+
+            if (bone.Id == OVRSkeleton.BoneId.FullBody_RightShoulder)
+            {
+                rightShoulderBone = bone;
+                //break;
+            }
+
+        }
+
         lastChickLeftLegPosition = chickLeftLeg.transform.localPosition;
         lastChickRightLegPosition = chickRightLeg.transform.localPosition;
 
@@ -166,9 +187,9 @@ public class CustomFingerColliderWithTable : MonoBehaviour
 
     void Update()
     {
+        bool leftTapDetected = false;
+        bool rightTapDetected = false;
         Rigidbody chickenRigidbody = chicken.GetComponent<Rigidbody>();
-
-
 
         //reset table height precisely
         if (leftIndexTipBone != null && leftHand.GetFingerIsPinching(OVRHand.HandFinger.Index))
@@ -176,120 +197,13 @@ public class CustomFingerColliderWithTable : MonoBehaviour
             tableSurfaceHeight = leftIndexTipBone.Transform.position.y;
         }
 
-
-
-        if (rightIndexTipBone.Transform.position.y < tableSurfaceHeight + 0.05 && leftIndexTipBone.Transform.position.y < tableSurfaceHeight + 0.05)
-        {
-
-            if (rightIndexTipBone != null)
-            {
-                if (rightIndexTipBone.Transform.position.y <= tableSurfaceHeight)
-                {
-                    Debug.Log("Right index tip is below or at the table surface height!");
-                    debugTextViewIndex.text = "Collided right";
-                    if(firstTapFlagRight == 1){
-                       Debug.Log("First tap");
-                       FMODUnity.RuntimeManager.PlayOneShot("event:/Footsteps/walk");
-                       firstTapFlagRight = 0;
-                    }
-
-                }
-                else
-                {
-                    debugTextViewIndex.text = "Not collided";
-                    firstTapFlagRight = 1;
-                    // Optionally reset to initial position if no collision
-                    //chickLeftLeg.transform.position = chickLeftLegInitialPosition;
-                    // Corrected: Assuming you want to move the leg relative to the chicken's current position and orientation
-
-                    float rightHandYPositionDifference = rightIndexTipBone.Transform.position.y - tableSurfaceHeight;
-                    // Apply the difference to the localPosition.y of the right leg
-                    chickRightLeg.transform.localPosition = new Vector3(
-                    chickRightLegInitialPosition.x - 1f * rightHandYPositionDifference,
-                    chickRightLeg.transform.localPosition.y, // Adjust this formula as needed
-                    chickRightLeg.transform.localPosition.z);
-
-
-                }
-            }
-
-            if (leftIndexTipBone != null)
-            {
-                if (leftIndexTipBone.Transform.position.y <= tableSurfaceHeight)
-                {
-                    Debug.Log("Left index tip is below or at the table surface height!");
-                    debugTextViewMiddle.text = "Collided left";
-                     if(firstTapFlagLeft == 1){
-                       Debug.Log("First tap");
-                       FMODUnity.RuntimeManager.PlayOneShot("event:/Footsteps/walk");
-                       firstTapFlagLeft = 0;
-                    }
-
-                }
-                else
-                {
-                     firstTapFlagLeft = 1;
-                    debugTextViewMiddle.text = "Not collided";
-
-                    float leftHandYPositionDifference = leftIndexTipBone.Transform.position.y - tableSurfaceHeight;
-                    // Apply the difference to the localPosition.y of the left leg
-                    chickLeftLeg.transform.localPosition = new Vector3(
-                        chickLeftLegInitialPosition.x - 1f * leftHandYPositionDifference,
-                        chickLeftLeg.transform.localPosition.y, // Adjust this formula as needed
-                        chickLeftLeg.transform.localPosition.z);
-
-
-
-                    // Optionally reset to initial position if no collision
-                    //chickRightLeg.transform.position = chickRightLegInitialPosition;
-                }
-            }
-
-        }
-        // Calculate leg movement frequency and update walking speed
-        float timeSinceLastMovement = Time.time - lastLegMovementTime;
-        Vector3 currentLeftLegPosition = chickLeftLeg.transform.localPosition;
-        Vector3 currentRightLegPosition = chickRightLeg.transform.localPosition;
-
-        if ((currentLeftLegPosition - lastChickLeftLegPosition).magnitude > 0.005f && (currentRightLegPosition - lastChickRightLegPosition).magnitude < 0.005f)
-        {
-            // Rotate chicken to left by 15 degrees
-            RotateChicken(Quaternion.Euler(0, -15, 0) * chicken.transform.forward);
-        }
-
-        if ((currentLeftLegPosition - lastChickLeftLegPosition).magnitude < 0.005f && (currentRightLegPosition - lastChickRightLegPosition).magnitude > 0.005f)
-        {
-            // Rotate chicken to right by 15 degrees
-            RotateChicken(Quaternion.Euler(0, 15, 0) * chicken.transform.forward);
-        }
-
-        // Check if either leg has moved significantly since last frame
-        if ((currentLeftLegPosition - lastChickLeftLegPosition).magnitude > 0.005f || (currentRightLegPosition - lastChickRightLegPosition).magnitude > 0.005f)
-        {
-            legMovementFrequency = 1f / timeSinceLastMovement; // Frequency is inverse of time
-            walkingSpeed = legMovementFrequency * 0.008f; // Adjust multiplier to scale speed appropriately
-            lastLegMovementTime = Time.time;
-        }
-        else
-        {
-            // If there's no significant movement, set walking speed to 0
-            walkingSpeed = 0f;
-        }
-
-        lastChickLeftLegPosition = currentLeftLegPosition;
-        lastChickRightLegPosition = currentRightLegPosition;
-
-        // Move the chicken forward based on walking speed
-        Vector3 moveDirection = chicken.transform.forward * walkingSpeed * Time.deltaTime;
-        chicken.transform.position += moveDirection;
-        // Move legs with the chicken
-
         float offsetFactor = 0.02f;
         if (leftIndexTipBone != null)
         {
             float leftHandYPosition = leftIndexTipBone.Transform.position.y;
             // Calculate the offset from the initial position
             float yOffsetLeft = leftHandYPosition - Camera.main.transform.position.y;
+            //float yOffsetLeft = leftHandYPosition - leftShoulderBone.Transform.position.y;
             // Apply the offset with a multiplier for more or less exaggeration
             chickLeftWing.transform.localPosition = new Vector3(
                 chickLeftWing.transform.localPosition.x,
@@ -303,6 +217,7 @@ public class CustomFingerColliderWithTable : MonoBehaviour
             float rightHandYPosition = rightIndexTipBone.Transform.position.y;
             // Calculate the offset from the initial position
             float yOffsetRight = rightHandYPosition - Camera.main.transform.position.y;
+            //float yOffsetRight = rightHandYPosition - rightShoulderBone.Transform.position.y;
 
             // Apply the offset with a multiplier for more or less exaggeration
             chickRightWing.transform.localPosition = new Vector3(
@@ -319,7 +234,7 @@ public class CustomFingerColliderWithTable : MonoBehaviour
         Vector3 currentRightWingPosition = chickRightWing.transform.localPosition;
 
 
-        if ((currentLeftWingPosition - lastChickLeftWingPosition).magnitude > 0.007f || (currentRightWingPosition - lastChickRightWingPosition).magnitude > 0.007f)
+        if ((currentLeftWingPosition - lastChickLeftWingPosition).magnitude > 0.004f || (currentRightWingPosition - lastChickRightWingPosition).magnitude > 0.004f)
         {
             wingMovementFrequency = 1f / timeSinceLastWingMovement; // Frequency is inverse of time
             lastWingMovementTime = Time.time;
@@ -341,16 +256,159 @@ public class CustomFingerColliderWithTable : MonoBehaviour
         if (wingMovementFrequency > 0)
         {
             // Apply a continuous upward force based on the wing movement frequency
-            float flyForce = Mathf.Lerp(0, 40f, wingMovementFrequency * 4); // Scale the force based on frequency
+            float flyForce = Mathf.Lerp(0, 20f, wingMovementFrequency * 4); // Scale the force based on frequency
             chickenRigidbody.AddForce(Vector3.up * flyForce, ForceMode.Force);
 
-                // Move the chicken forward while flying
-            float forwardForce = 5f; // Adjust this value as needed for desired forward movement speed
-            chickenRigidbody.AddForce(chicken.transform.forward * forwardForce, ForceMode.Force);
+            // Calculate the difference between left and right hand Y positions
+            float handYPositionDifference = rightIndexTipBone.Transform.position.y - leftIndexTipBone.Transform.position.y;
+
+            // Determine the directional force based on the hand Y position difference
+            // This will add a force that is slightly offset from the forward direction based on the hand positions
+            Vector3 directionalForce = chicken.transform.forward - (chicken.transform.right * handYPositionDifference * 2f); // Adjust the multiplier as needed for desired effect
+
+            // Move the chicken forward while flying, with a slight offset based on hand positions
+            float forwardForce = 1f; // Adjust this value as needed for desired forward movement speed
+            chickenRigidbody.velocity = new Vector3(directionalForce.x * forwardForce, chickenRigidbody.velocity.y, directionalForce.z * forwardForce);
+
+
+
 
 
             lastChickLeftWingPosition = currentLeftWingPosition;
             lastChickRightWingPosition = currentRightWingPosition;
+
+        }
+
+        if (wingMovementFrequency == 0)
+        {
+
+
+
+            if (rightIndexTipBone.Transform.position.y < tableSurfaceHeight + 0.05 && leftIndexTipBone.Transform.position.y < tableSurfaceHeight + 0.05)
+            {
+
+
+                if (rightIndexTipBone != null)
+                {
+                    if (rightIndexTipBone.Transform.position.y <= tableSurfaceHeight)
+                    {
+                        rightTapDetected = true;
+                        debugTextViewIndex.text = "Collided right";
+
+                        //Debug.Log("Right index tip is below or at the table surface height!");
+
+                        if (firstTapFlagRight == 1)
+                        {
+                            Debug.Log("First tap");
+                            FMODUnity.RuntimeManager.PlayOneShot("event:/Footsteps/walk");
+                            firstTapFlagRight = 0;
+                        }
+
+
+
+                    }
+                    else
+                    {
+                        debugTextViewIndex.text = "Not collided";
+                        firstTapFlagRight = 1;
+                        // Optionally reset to initial position if no collision
+                        //chickLeftLeg.transform.position = chickLeftLegInitialPosition;
+                        // Corrected: Assuming you want to move the leg relative to the chicken's current position and orientation
+
+                        float rightHandYPositionDifference = rightIndexTipBone.Transform.position.y - tableSurfaceHeight;
+                        // Apply the difference to the localPosition.y of the right leg
+                        chickRightLeg.transform.localPosition = new Vector3(
+                        chickRightLegInitialPosition.x - 1f * rightHandYPositionDifference,
+                        chickRightLeg.transform.localPosition.y, // Adjust this formula as needed
+                        chickRightLeg.transform.localPosition.z);
+
+
+                    }
+                }
+
+                if (leftIndexTipBone != null)
+                {
+                    if (leftIndexTipBone.Transform.position.y <= tableSurfaceHeight)
+                    {
+                        leftTapDetected = true;
+                        Debug.Log("Left index tip is below or at the table surface height!");
+                        debugTextViewMiddle.text = "Collided left";
+                        if (firstTapFlagLeft == 1)
+                        {
+
+                            Debug.Log("First tap");
+                            FMODUnity.RuntimeManager.PlayOneShot("event:/Footsteps/walk");
+                            firstTapFlagLeft = 0;
+                        }
+
+                    }
+                    else
+                    {
+                        firstTapFlagLeft = 1;
+                        debugTextViewMiddle.text = "Not collided";
+
+                        float leftHandYPositionDifference = leftIndexTipBone.Transform.position.y - tableSurfaceHeight;
+                        // Apply the difference to the localPosition.y of the left leg
+                        chickLeftLeg.transform.localPosition = new Vector3(
+                            chickLeftLegInitialPosition.x - 1f * leftHandYPositionDifference,
+                            chickLeftLeg.transform.localPosition.y, // Adjust this formula as needed
+                            chickLeftLeg.transform.localPosition.z);
+
+
+
+                        // Optionally reset to initial position if no collision
+                        //chickRightLeg.transform.position = chickRightLegInitialPosition;
+                    }
+                }
+
+            }
+            // Calculate leg movement frequency and update walking speed
+            float timeSinceLastMovement = Time.time - lastLegMovementTime;
+            Vector3 currentLeftLegPosition = chickLeftLeg.transform.localPosition;
+            Vector3 currentRightLegPosition = chickRightLeg.transform.localPosition;
+            float deviationThreshold = 60f; // Threshold in degrees for deviation
+            Vector3 expectedUpDirection = Vector3.up;
+            float angleDeviation = Vector3.Angle(chicken.transform.up, expectedUpDirection);
+
+            if ((currentLeftLegPosition - lastChickLeftLegPosition).magnitude > 0.005f && (currentRightLegPosition - lastChickRightLegPosition).magnitude < 0.005f)
+            {
+                // Rotate chicken to left by 15 degrees
+                RotateChicken(Quaternion.Euler(0, -15, 0) * chicken.transform.forward);
+            }
+
+            else if ((currentLeftLegPosition - lastChickLeftLegPosition).magnitude < 0.005f && (currentRightLegPosition - lastChickRightLegPosition).magnitude > 0.005f)
+            {
+                // Rotate chicken to right by 15 degrees
+                RotateChicken(Quaternion.Euler(0, 15, 0) * chicken.transform.forward);
+            }
+
+            // else if(angleDeviation > deviationThreshold){
+            //       RotateChicken(Quaternion.Euler(0, 0, 0) * chicken.transform.forward);
+            // }
+
+
+
+
+            // Check if either leg has moved significantly since last frame
+            if ((currentLeftLegPosition - lastChickLeftLegPosition).magnitude > 0.005f || (currentRightLegPosition - lastChickRightLegPosition).magnitude > 0.005f)
+            {
+                legMovementFrequency = 1f / timeSinceLastMovement; // Frequency is inverse of time
+                walkingSpeed = legMovementFrequency * 0.01f; // Adjust multiplier to scale speed appropriately
+                lastLegMovementTime = Time.time;
+            }
+            else
+            {
+                // If there's no significant movement, set walking speed to 0
+                walkingSpeed = 0f;
+            }
+
+            lastChickLeftLegPosition = currentLeftLegPosition;
+            lastChickRightLegPosition = currentRightLegPosition;
+
+            // Move the chicken forward based on walking speed
+            Vector3 moveDirection = chicken.transform.forward * walkingSpeed * Time.deltaTime;
+            chicken.transform.position += moveDirection;
+
 
         }
 
@@ -363,8 +421,32 @@ public class CustomFingerColliderWithTable : MonoBehaviour
         // chickLeftWingInitialPosition += moveDirection;
         // chickRightWingInitialPosition += moveDirection;
 
+        float currentYRotation = chicken.transform.eulerAngles.y;
+        chicken.transform.rotation = Quaternion.Euler(0, currentYRotation, 0);
+
+
+
     }
 
+    void FixedUpdate()
+    {
+        ApplyCustomGravity();
+    }
+
+
+    void ApplyCustomGravity()
+    {
+        // Assuming 'chicken' has a Rigidbody component attached
+        Rigidbody chickenRigidbody = chicken.GetComponent<Rigidbody>();
+        if (chickenRigidbody != null)
+        {
+            // Define your custom gravity force vector
+            Vector3 customGravityForce = new Vector3(0, -3f, 0); // This is just normal Earth gravity, adjust as needed
+
+            // Apply the custom gravity force
+            chickenRigidbody.AddForce(customGravityForce * chickenRigidbody.mass); // Multiply by mass to get a force equivalent to gravity
+        }
+    }
 
     void RotateChicken(Vector3 movementDirection)
     {
