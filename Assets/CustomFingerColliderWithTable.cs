@@ -256,18 +256,18 @@ public class CustomFingerColliderWithTable : MonoBehaviour
         if (wingMovementFrequency > 0)
         {
             // Apply a continuous upward force based on the wing movement frequency
-            float flyForce = Mathf.Lerp(0, 20f, wingMovementFrequency * 4); // Scale the force based on frequency
+            float flyForce = Mathf.Lerp(0, 20f, wingMovementFrequency * 2); // Scale the force based on frequency
             chickenRigidbody.AddForce(Vector3.up * flyForce, ForceMode.Force);
 
             // Calculate the difference between left and right hand Y positions
-            float handYPositionDifference = rightIndexTipBone.Transform.position.y - leftIndexTipBone.Transform.position.y;
+            float handYPositionDifference = - ( rightIndexTipBone.Transform.position.y - leftIndexTipBone.Transform.position.y);
 
             // Determine the directional force based on the hand Y position difference
             // This will add a force that is slightly offset from the forward direction based on the hand positions
-            Vector3 directionalForce = chicken.transform.forward - (chicken.transform.right * handYPositionDifference * 2f); // Adjust the multiplier as needed for desired effect
+            Vector3 directionalForce = chicken.transform.forward + (chicken.transform.right * handYPositionDifference * 3f); // Adjust the multiplier as needed for desired effect
 
             // Move the chicken forward while flying, with a slight offset based on hand positions
-            float forwardForce = 1f; // Adjust this value as needed for desired forward movement speed
+            float forwardForce = 0.8f; // Adjust this value as needed for desired forward movement speed
             chickenRigidbody.velocity = new Vector3(directionalForce.x * forwardForce, chickenRigidbody.velocity.y, directionalForce.z * forwardForce);
 
 
@@ -441,7 +441,7 @@ public class CustomFingerColliderWithTable : MonoBehaviour
         if (chickenRigidbody != null)
         {
             // Define your custom gravity force vector
-            Vector3 customGravityForce = new Vector3(0, -3f, 0); // This is just normal Earth gravity, adjust as needed
+            Vector3 customGravityForce = new Vector3(0, -5f, 0); // This is just normal Earth gravity, adjust as needed
 
             // Apply the custom gravity force
             chickenRigidbody.AddForce(customGravityForce * chickenRigidbody.mass); // Multiply by mass to get a force equivalent to gravity
