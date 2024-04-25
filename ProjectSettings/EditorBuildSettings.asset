@@ -11,6 +11,9 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Samples/Meta MR Utility Kit/64.0.0/Passthrough Relighting/PassthroughRelighting.unity
     guid: 36246cc1dd7f015428dc705da9e4497e
+  - enabled: 0
+    path: Assets/Scenes/Day2.unity
+    guid: 6c116a806895f4f54a1f91f3ac5a5846
   m_configObjects:
     Unity.XR.Oculus.Settings: {fileID: 11400000, guid: de9f12ad0f7e24a21afc17c1fc2c96a5, type: 2}
     com.unity.xr.management.loader_settings: {fileID: 11400000, guid: f1d3c56115e6a45c3921de22a9d3ceaa, type: 2}
