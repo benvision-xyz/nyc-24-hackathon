@@ -133,7 +133,8 @@ bool birdOnNestFirst = false;
         wingSoundInstance = FMODUnity.RuntimeManager.CreateInstance("event:/Hackathon/Locomotion/wing");
         walkSoundInstance = FMODUnity.RuntimeManager.CreateInstance("event:/Hackathon/Locomotion/walk");
         singSoundInstance = FMODUnity.RuntimeManager.CreateInstance("event:/Hackathon/VO/Sing");
-        nestLoopSoundInstance = FMODUnity.RuntimeManager.CreateInstance("event:/Your/Event/Path/Here");
+        nestLoopSoundInstance = FMODUnity.RuntimeManager.CreateInstance("event:/Hackathon/VO/Nest");
+
         
         LeanTween.scale(nest, Vector3.zero, 0.5f).setEase(LeanTweenType.easeOutBack);
 
@@ -268,8 +269,9 @@ bool birdOnNestFirst = false;
                 // The bird is now being held
                 isHoldingBird = true;
                 // Show the nest by moving it to the chicken's position and scaling it up
-                 FMOD.ATTRIBUTES_3D attributes = FMODUnity.RuntimeUtils.To3DAttributes(nest.transform.position);
+                FMOD.ATTRIBUTES_3D attributes = FMODUnity.RuntimeUtils.To3DAttributes(nest.transform.position);
                 nestLoopSoundInstance.set3DAttributes(attributes);
+                nestLoopSoundInstance.start();
                 nest.transform.position = Camera.main.transform.position + 0.5f * Vector3.forward;
                 LeanTween.scale(nest, Vector3.one * 0.015f, 0.5f).setEase(LeanTweenType.easeOutBack);
             }
@@ -281,6 +283,7 @@ bool birdOnNestFirst = false;
                 // Hide the nest when the bird is not held
                 LeanTween.scale(nest, Vector3.zero, 0.5f).setEase(LeanTweenType.easeOutBack);
                 nestLoopSoundInstance.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
+                birdOnNestFirst = false;
         }
 
 
@@ -350,6 +353,7 @@ bool birdOnNestFirst = false;
         //flying mechanics
         if ( distanceBetweenHands > 0.5 && (currentLeftWingPosition - lastChickLeftWingPosition).magnitude > wingThreshold || (currentRightWingPosition - lastChickRightWingPosition).magnitude > wingThreshold)
         {
+
             debugTextViewMiddle.text = "Wing:" + wingMovementFrequency;
             float normalizedFrequency = MapFrequencyToNormalizedRange(wingMovementFrequency, 0f, 100f);
 
@@ -363,18 +367,28 @@ bool birdOnNestFirst = false;
             wingSoundInstance.start();
 
             // Example usage within the Update method or wherever you're handling the FMOD event triggering
+            float legsUpConstant = 0.06f;
+                    chickRightLeg.transform.localPosition = new Vector3(
+                    chickRightLegInitialPosition.x - legsUpConstant ,
+                    chickRightLeg.transform.localPosition.y, // Adjust this formula as needed
+                    chickRightLeg.transform.localPosition.z);
 
-
+                     chickLeftLeg.transform.localPosition = new Vector3(
+                    chickLeftLegInitialPosition.x -legsUpConstant,
+                    chickLeftLeg.transform.localPosition.y, // Adjust this formula as needed
+                    chickLeftLeg.transform.localPosition.z);
             wingMovementFrequency = 1f / timeSinceLastWingMovement; // Frequency is inverse of time
             lastWingMovementTime = Time.time;
 
             // Apply a continuous upward force based on the wing movement frequency
-            float flyForce = Mathf.Lerp(0, 20f, wingMovementFrequency*0.7f); // Scale the force based on frequency
+            float flyForce = Mathf.Lerp(0, 17f, wingMovementFrequency*0.7f); // Scale the force based on frequency
             if (isBirdOnNest || isHoldingBird)
             {
 
                 flyForce = 0f;
             }
+
+
             chickenRigidbody.AddForce(Vector3.up * flyForce, ForceMode.Force);
 
             // Calculate the difference between left and right hand Y positions

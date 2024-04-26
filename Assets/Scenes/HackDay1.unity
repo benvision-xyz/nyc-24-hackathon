@@ -32294,7 +32294,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5096662253400645984, guid: c74fd40148beba44daae7fbe4ed52470, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -0.050003804
+      value: 0.797
       objectReference: {fileID: 0}
     - target: {fileID: 5096662253400645984, guid: c74fd40148beba44daae7fbe4ed52470, type: 3}
       propertyPath: m_LocalPosition.y
@@ -32480,7 +32480,7 @@ MonoBehaviour:
   Params: []
   OverrideAttenuation: 0
   OverrideMinDistance: 0
-  OverrideMaxDistance: 8.6
+  OverrideMaxDistance: 10
 --- !u!114 &2109168465
 MonoBehaviour:
   m_ObjectHideFlags: 0
