@@ -70,6 +70,8 @@ bool birdOnNestFirst = false;
     bool leftTapDetected = false;
     bool rightTapDetected = false;
     bool isBirdNearNest  = false;
+
+    private Animator chickenAnimator;
     //turn left
     float legMovementThreshold = 0.002f;
     private Vector3 lastChickLeftWingPosition;
@@ -128,6 +130,8 @@ bool birdOnNestFirst = false;
     // }
     void Start()
     {
+
+         chickenAnimator = chicken.GetComponent<Animator>();
 
 
         wingSoundInstance = FMODUnity.RuntimeManager.CreateInstance("event:/Hackathon/Locomotion/wing");
@@ -353,6 +357,7 @@ bool birdOnNestFirst = false;
         //flying mechanics
         if ( distanceBetweenHands > 0.5 && (currentLeftWingPosition - lastChickLeftWingPosition).magnitude > wingThreshold || (currentRightWingPosition - lastChickRightWingPosition).magnitude > wingThreshold)
         {
+            //   if (chickenAnimator.enabled) chickenAnimator.enabled = false; 
 
             debugTextViewMiddle.text = "Wing:" + wingMovementFrequency;
             float normalizedFrequency = MapFrequencyToNormalizedRange(wingMovementFrequency, 0f, 100f);
@@ -427,6 +432,7 @@ bool birdOnNestFirst = false;
         //foot step connection with fingers and rig
         else
         {
+            //   if (chickenAnimator.enabled) chickenAnimator.enabled = false;
             if (rightIndexTipBone.Transform.position.y >= tableSurfaceHeight - 0.05f && rightMiddleTipBone.Transform.position.y >= tableSurfaceHeight - 0.05f && rightIndexTipBone.Transform.position.y < tableSurfaceHeight + 0.05f && rightMiddleTipBone.Transform.position.y < tableSurfaceHeight + 0.05f)
             {
 
@@ -538,6 +544,17 @@ bool birdOnNestFirst = false;
             Vector3 moveDirection = chicken.transform.forward * walkingSpeed * Time.deltaTime;
             chicken.transform.position += moveDirection;
         }
+
+        if(walkingSpeed > 0f || wingMovementFrequency > 0f){
+            if (chickenAnimator.enabled) chickenAnimator.enabled = false;
+        }
+        else{
+             if (!chickenAnimator.enabled) chickenAnimator.enabled = true;
+           
+        }
+        // 
+
+       
 
 
 
