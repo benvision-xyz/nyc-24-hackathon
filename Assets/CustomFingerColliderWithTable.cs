@@ -367,7 +367,7 @@ bool birdOnNestFirst = false;
             wingSoundInstance.start();
 
             // Example usage within the Update method or wherever you're handling the FMOD event triggering
-            float legsUpConstant = 0.06f;
+            float legsUpConstant = 0.05f;
                     chickRightLeg.transform.localPosition = new Vector3(
                     chickRightLegInitialPosition.x - legsUpConstant ,
                     chickRightLeg.transform.localPosition.y, // Adjust this formula as needed
